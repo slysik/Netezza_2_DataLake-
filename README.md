@@ -15,10 +15,12 @@ The script does the setup, performs unload of Netezza table to CSV files and use
 
 Things to note:
 
-The script is for a single table yet in comcination with NEtezza script (nz)tavles) can be called to list the tables in a database to execute the script as needed to loop through a list of tables.
+The script is for a single table yet in combination with NEtezza script (nz_tables)can be called to list the tables in a database to execute the script as needed to loop through a list of tables.
 
 Modified the IBM Neteza nz_backup command to add a header to each of the eight CSV files that get created - The is imprtant for Synapse Pipeline / ADF load to Synapse dedicated pool. 
+
 The data is unloaded in multile streams to CSV file.s  
+
 Please use eight streams as its proven to be the sweet spot for the Netezza nz_backup utility script. 
 
 For larger NEtezza appliance you can use 16 : 2 rack or higher. 
@@ -26,6 +28,7 @@ The AZCOPY command uses a SAS key for the target container for authentication. Y
 
 Note: 
 The truncate/reload section of the script is necessary to create a separate database specifically for migration because the Netezza VARCHAR datatype is not compatible with the Synapse VARCHAR datatype.  Converting Netezza VARCHAR to NVARCHAR solves that problem. 
+
 Another solution is to change the encoding of the CSV files before they’re copied to ADLS, yet that doubles the duration of the data copy.) The other reason for the need to create the separate database is because the structures of the source and target tables is slightly different, and Synapse Pipeline default mappings require a one-to-one relationship between the source and target columns. This approach changes on the source rather than making any changes to existing target tables in Synapse.
 Optionally: You can use a dynamically generated insert scripts for every table in the Synapse (ETL_AZURE) database. I will add the step to loop thru each database to be migrated and then list out each table to be extracted.
 
